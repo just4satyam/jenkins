@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:cluster="http://www.mulesoft.org/schema/mule/ee/cluster"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a02419b4-0fc0-4ed3-b893-08d5907c0ac0" basePath="/test" >
+		<http:listener-connection host="0.0.0.0" port="8081"/>
+	</http:listener-config>
+<import doc:name="Import" doc:id="9ebc5be0-3ad2-40f1-a7cd-d6ffec71742a" file="clientLoggingSplunkPublisherFlow.xml" />
+	<import doc:name="Import" doc:id="b7a71c01-76ff-4f5c-83f3-50282fdc797b" file="global-exception-handling.xml" />
+	<configuration doc:name="Configuration" doc:id="e451ba10-87a3-4ac2-b91f-fb6ca6e98222" defaultErrorHandler-ref="globalError_Handler_OnErrorContinue" />
+	<flow name="demoFlow" doc:id="d209156b-b4f3-489b-82bf-a69a17c57b64" >
+		<http:listener doc:name="Listener" doc:id="36b67582-9400-41ba-a47d-e2d60349591c" config-ref="HTTP_Listener_config" path="/demo">
+			<http:response statusCode="#[vars.httpStatus]">
+			</http:response>
+		</http:listener>
+		<flow-ref doc:name="clientErrorLoggingSplunkPublisherFlow LOG START" doc:id="1e318e6e-5d89-45fa-93c1-37862f55929b" name="clientLoggingSplunkPublisherFlow"/>
+<ee:transform doc:name="Transform Message" doc:id="ed961e0a-8aee-453d-a180-7ce9a84b8ce6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var arriveDate = "20121212"
+var arriveTime = "134300"
+---
+{
+	arrivedDateTime: (((arriveDate ++ arriveTime)  as LocalDateTime {format: 'yyyyMMddHHmmss'})  as DateTime {format:"MM-dd-yyyy'T'HH:mm:ss"} ++ |+01:00| )>> "UTC"
+}
+ ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	<flow-ref doc:name="clientErrorLoggingSplunkPublisherFlow LOG END" doc:id="1e83180a-b705-4062-826f-0d73c86b34b4" name="clientLoggingSplunkPublisherFlow"/>
+		
+	</flow>
+</mule>

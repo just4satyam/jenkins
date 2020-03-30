@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="ASD" format="json">
+      <types:shape format="weave" example="examples/sample.json"><![CDATA[%dw 2.0
+type ASD = {|
+  currencyCode: String, 
+  description: String, 
+  documentType: String, 
+  dueDate: String, 
+  invoiceNumber: String, 
+  invoiceDate: String, 
+  referenceDocumentNumber: Null, 
+  salesOrganization: String, 
+  serviceOrderNumber: Null, 
+  paymentKeyTerms: String, 
+  vendorItemAmount: String, 
+  status: String, 
+  customerPONumber: Null, 
+  serviceRenderedDate: String, 
+  contractNumber: String, 
+  partnerInformation: {|  |}, 
+  mule_correlId: {| correlationId: String |}, 
+  IdocNumber: String
+|} {"MetadataFormat": "json",
+"example": "{\"currencyCode\":\"EUR\",\"description\":\"Factura\",\"documentType\":\"YMI0\",\"dueDate\":\"2020-01-24T00:00:00Z\",\"invoiceNumber\":\"0951040225\",\"invoiceDate\":\"2013-10-01T00:00:00Z\",\"referenceDocumentNumber\":null,\"salesOrganization\":\"262\",\"serviceOrderNumber\":null,\"paymentKeyTerms\":\"Y008\",\"vendorItemAmount\":\"256.47\",\"status\":\"Cleared\",\"customerPONumber\":null,\"serviceRenderedDate\":\"2013-12-31T00:00:00Z\",\"contractNumber\":\"E40227026\",\"partnerInformation\":{},\"mule_correlId\":{\"correlationId\":\"123\"},\"IdocNumber\":\"0000000698871247\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#cb770de8-ec78-4df2-8457-fba33f0a7741">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="ASD"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
